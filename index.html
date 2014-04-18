@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+<title>Autocomplete widget</title>
+	
+</head>
+
+<body>
+
+<h1 id="banner">Autocomplete text Widget Demo</h1>
+<style>
+    
+    input[name="xx"]{
+    background-color: transparent;
+    border: 0px;
+    outline: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    width:5px;
+    color:transparent;
+    cursor:default;
+}
+</style>
+
+<div id="content">
+	<form autocomplete="off">
+	  <p>
+          <input name="xx">
+         <label>Describe the city you live in:</label>
+ 
+          <input type="text" id="suggest1" list="json-datalist" onChange="getHint()" autocomplete="off" />
+
+          <datalist id="json-datalist">
+           </datalist>
+    
+	  </p>
+	  <input type="button" name="button" id="submitbutton" onClick="reenablebtn()" value="submit" />
+  </form>
+</div>
+    
+
+<script type="text/javascript" src="js/libs/jquery.js"></script>
+<script type='text/javascript' src="js/localdata.js"></script>
+    
+<script type="text/javascript">
+    window.onload=InitWeb;
+function InitWeb(){
+	  document.getElementById('submitbutton').disabled="disabled";
+}
+    var x = document.getElementById("suggest1");
+	x = x.value.substr(0,1).toUpperCase();
+    var dic = []; 
+    for (var j=0; j<cities.length; j++) {
+        if (cities[j].substr(0,1).match(x) ){
+            dic.push(cities[j]);
+        }
+    }
+    var dataToStroe = JSON.stringify(dic);
+    localStorage.setItem('userSelected',dataToStroe);
+    var localData = JSON.parse(localStorage.getItem('userSelected'));
+    $.each(localData, function(key, value){
+    console.log(key + ' = ' + value);
+});
+    var dataList = document.getElementById('json-datalist');
+    // Loop over the JSON array.
+    //debugger;
+    localData.forEach(function(item) {
+        // Create a new <option> element.
+        var option = document.createElement('option');
+        // Set the value using the item in the JSON array.
+        option.value = item;
+        // Add the <option> element to the <datalist>.
+        dataList.appendChild(option);
+      });
+    //debugger;  
+function reenablebtn(){  
+        document.getElementById('submitbutton').removeAttribute("disabled"); 
+}
+
+function getHint(){
+    var inputs = document.getElementById ("suggest1");
+    var optionFound = false;
+    //for (var i=0 ;i<inputs.length; i++){
+        document.getElementById("suggest1").addEventListener('change', function() {
+      //datalist = this.list;
+    // Determine whether an option exists with the current value of the input.
+        for (var j = 0; j < dataList.options.length; j++) {
+            if (inputs.value == dataList.options[j].value) {
+                optionFound = true;
+                break;
+            }
+        }
+    
+    // use the setCustomValidity function of the Validation API
+    // to provide an user feedback if the value does not exist in the datalist
+    if (optionFound) {
+      //this.setCustomValidity('');
+        //alert("found");
+        document.getElementById('submitbutton').removeAttribute("disabled"); 
+        //inputs = "";
+        //optionFound = false;
+
+    } else {
+        //alert("not found");
+	   document.getElementById('submitbutton').disabled="disabled";
+        //inputs = "";
+        //optionFound = false;
+    } 
+        });  
+    //} 
+}
+</script>
+</body>
+</html>
